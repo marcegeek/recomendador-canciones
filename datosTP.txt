@@ -1,16 +1,18 @@
-artista(rodrigo,'Ocho cuarenta').
-artista(tini,'Sueltate el pelo').
-artista(paramore,'Hard times').
-artista(paramore,'No friend').
+artista('Hard times',paramore).
+artista('No friend',paramore).
+artista('Ocho cuarenta',rodrigo).
+artista('Sueltate el pelo',tini).
 genero('Ocho cuarenta',cuarteto).
 genero('Sueltate el pelo',reggeton).
 genero('Hard times','new wawe').
+genero('No friend','experimental rock').
 animo('Ocho cuarenta',bailable).
 animo('Sueltate el pelo',bailable).
 animo('Hard times',alegre).
-duracion('Ocho cuarenta','larga').
-duracion('Sueltate el pelo','corta').
-duracion('Hard times','media').
+animo('No friend',triste).
+duracion('Ocho cuarenta',larga).
+duracion('Sueltate el pelo',corta).
+duracion('Hard times',media).
+duracion('No friend',media).
 escuchas(juan,'Ocho cuarenta',5).
 escuchas(juan,'Hard times',14).
-escuchas(juan,'No friend',2).

@@ -4,17 +4,17 @@ artista('Ocho cuarenta',rodrigo).
 artista('Sueltate el pelo',tini).
 artista('El bombón asesino', 'los palmeras').
 artista('Llorarás mas de diez veces', 'leo mattioli').
-artista('Frágil', 'grupo_frontera').
+artista('Frágil', 'grupo frontera').
 artista('Decode', 'paramore').
-artista('La Bebe', 'peso_pluma').
+artista('La Bebe', 'peso pluma').
 
 genero('Ocho cuarenta',cuarteto).
 genero('Sueltate el pelo',reggeton).
 genero('Hard times','new wawe').
 genero('No friend','experimental rock').
-genero('El bombón asesino', 'cumbia').
-genero('Llorarás mas de diez veces','cumbia').
-genero('Frágil', 'cumbia').
+genero('El bombon asesino', 'cumbia').
+genero('Lloraras mas de diez veces','cumbia').
+genero('Fragil', 'cumbia').
 genero('Decode','rock alternativo').
 genero('La Bebe',reggaeton).
 
@@ -40,8 +40,8 @@ duracion('La Bebe', media).
 
 escuchas(juan,'Ocho cuarenta',5).
 escuchas(juan,'Hard times',14).
-escuchas(franco,'El bombón asesino',13)
-ecuchas(santiago,'Frágil',10).
+escuchas(franco,'El bombón asesino',13).
+escuchas(santiago,'Frágil',10).
 escuchas(ramon,'Ocho cuarenta',10).
 escuchas(santiago,'La Bebe',6).
 

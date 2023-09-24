@@ -1,9 +1,8 @@
 inicio:-
- dynamic(filtros/1),
-assert(filtros([])),
     write_ln('Ingrese su usuario para que le recomiende canciones de su gusto'),
     read(Usuario),
     cargarBase,
+    assert(filtros([])),
     write('¡Hola '), write(Usuario),write_ln('! ¿Que quieres buscar hoy? cancion, genero, animo o artista?'),
     writeln('----------------'),
     writeln('¡Tambien podemos mostrarte tendencias tuyas o novedades!;)'),
@@ -12,7 +11,15 @@ assert(filtros([])),
     %recomendar(Usuario).
 
 %carga base de datos
-cargarBase:-consult('datosTP.txt').
+cargarBase:-
+    retractall(filtros/1)
+    ,retractall(escuchas/3)
+    ,retractall(genero/2)
+    ,retractall(artista/2)
+    ,retractall(duracion/2)
+    ,retractall(animo/2)
+    ,retractall(usuario/3)
+    ,consult('datosTP.txt').
 
 
 menu(Dato, Usuario) :-
@@ -23,22 +30,22 @@ menu(Dato, Usuario) :-
             write('Ingrese una canción: '),
             read(Cancion),
             agregarFiltro(Cancion),
-            buscarCancion(Cancion, Art, Gen, Ani, Dur, Lista)
+            buscarCancion(Cancion, _, _, _, _, Lista)
         ;   Dato = artista ->
             write('Indique un artista: '),
             read(Artista),
             agregarFiltro(Artista),
-            buscarArtista(Artista, Gen, Can, Ani, Dur, Lista)
+            buscarArtista(Artista, _, _, _, _, Lista)
         ;   Dato = genero ->
             write('Ingrese un género: '),
             read(Genero),
             agregarFiltro(Genero),
-            buscarGenero(Genero, Art, Can, Ani, Dur, Lista)
+            buscarGenero(Genero, _, _, _, _, Lista)
         ;   Dato = animo ->
             write('¿Cómo te sientes hoy? '),
             read(Ani),
             agregarFiltro(Ani),
-            buscarAnimo(Ani, Art, Can, Gen, Dur, Lista)
+            buscarAnimo(Ani, Lista)
         ;   Dato = novedades ->
             writeln('¡Aquí están tus canciones más escuchadas!'),
             recomendar(Usuario)
@@ -53,8 +60,7 @@ menu(Dato, Usuario) :-
                 menuLoop(Usuario)
             ; Opc = 'no' ->
                 % Si se responde "no", salir del bucle
-                ordenar(Lista, ListaMuestra),
-                elegirCanciones(Usuario,ListaMuestra)
+                elegirCanciones(Usuario,Lista)
             ;
                 % Si la respuesta no es válida, mostrar un mensaje de error y continuar el bucle
                 writeln('Respuesta no válida. Responde "si" o "no"')
@@ -82,28 +88,19 @@ mostrarFiltros([Filtro|Resto]) :-
     write(Filtro), write(', '),
     mostrarFiltros(Resto).
 
-buscarAnimo(Animo,Artistas,Canciones,Generos,Duraciones,[H|T]):-
+buscarAnimo(Animo,[Cancion|T]):-
     animo(Cancion,Animo),
-    genero(Cancion,Gen),
-    artista(Cancion,Art),
-    duracion(Cancion,Dur),
     dynamic(artista/2),
-    retract(artista(Cancion,Art)),
+    retract(artista(Cancion,_)),
     dynamic(genero/2),
-    retract(genero(Cancion,Gen)),
+    retract(genero(Cancion,_)),
     dynamic(animo/2),
-    retract(animo(Cancion,Animo)),
+    retract(animo(Cancion,_)),
     dynamic(duracion/2),
-    retract(duracion(Cancion,Dur)),
+    retract(duracion(Cancion,_)),
 
-    evaluarCancion(Art,Artistas,1000,PuntajeArt),
-    evaluarCancion(Animo,Animos,10,PuntajeAni),
-    evaluarCancion(Dur,Duraciones,1,PuntajeDur),
-    PuntajeTotal is PuntajeArt + PuntajeAni + PuntajeDur,
-
-    append([Cancion],[PuntajeTotal],H),
-    buscarAnimo(Animo,Artistas,Canciones,Generos,Duraciones,T).
-buscarAnimo(_,[],[],[],[],[]). %fin de bucle.
+    buscarAnimo(Animo,T).
+buscarAnimo(_,[]). %fin de bucle.
 
 
 
@@ -196,7 +193,15 @@ elegirCanciones(Usuario,Recomendaciones):-
     read(Eleccion),
     Eleccion\='No',
     buscar_por_indice(Recomendaciones,Eleccion,Agregar),
-    assert(escuchas(Usuario,Agregar,1)),
+    dynamic(escuchas/3),
+    (escuchas(Usuario,Agregar,_)->
+        (escuchas(Usuario,Agregar,CantActual),
+        CantNueva is CantActual +1,
+        retract(escuchas(Usuario,Agregar,CantActual))
+        );
+        CantNueva is 1
+    ),
+    assert(escuchas(Usuario,Agregar,CantNueva)),
     guardar.
 
 elegirCanciones(_,_):-
@@ -238,13 +243,50 @@ mostrarCanciones([[H,_]|T],Pos):-
     atom_concat(Print9, Dur, Print),
     write_ln(Print).
 
+mostrarCanciones([H|[]],1):-
+        artista(H,Art),
+        genero(H,Gen),
+        animo(H,Ani),
+        duracion(H,Dur),
+        atom_concat(1, ': ', Print1),
+        atom_concat(Print1, H, Print2),
+        atom_concat(Print2, ' - ', Print3),
+        atom_concat(Print3, Art, Print4),
+        atom_concat(Print4, ' - ', Print5),
+        atom_concat(Print5, Gen, Print6),
+        atom_concat(Print6, ' - ', Print7),
+        atom_concat(Print7, Ani, Print8),
+        atom_concat(Print8, ' - ', Print9),
+        atom_concat(Print9, Dur, Print),
+        write_ln(Print).
+
+mostrarCanciones([H|T],Pos):-
+        mostrarCanciones(T,P),
+        Pos is P+1,
+        artista(H,Art),
+        genero(H,Gen),
+        animo(H,Ani),
+        duracion(H,Dur),
+        atom_concat(Pos, ': ', Print1),
+        atom_concat(Print1, H, Print2),
+        atom_concat(Print2, ' - ', Print3),
+        atom_concat(Print3, Art, Print4),
+        atom_concat(Print4, ' - ', Print5),
+        atom_concat(Print5, Gen, Print6),
+        atom_concat(Print6, ' - ', Print7),
+        atom_concat(Print7, Ani, Print8),
+        atom_concat(Print8, ' - ', Print9),
+        atom_concat(Print9, Dur, Print),
+        write_ln(Print).
+
 guardar:-
     tell('datosTP.txt'),
-    listing(artista),
-    listing(genero),
-    listing(animo),
-    listing(duracion),
-    listing(escuchas),
+    listing(artista/2),
+    listing(genero/2),
+    listing(animo/2),
+    listing(duracion/2),
+    listing(escuchas/3),
+    listing(usuario/3),
     told.
 
 evaluarCancion(_,[],_,0).
@@ -257,6 +299,7 @@ evaluarCancion(Elemento,Lista,Factor,S):-
 
 
 buscar_por_indice([[H,_]|_], 1, H).
+buscar_por_indice([H|_], 1, H).
 buscar_por_indice([_|T], I, Elemento) :-
     I > 1,
     I1 is I - 1,

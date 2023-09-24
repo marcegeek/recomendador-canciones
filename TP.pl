@@ -1,3 +1,10 @@
+:-dynamic(artista/2). %artista(titulo_cancion, nombre_artista).
+:-dynamic(genero/2). %genero(titulo_cancion, nombre_genero).
+:-dynamic(animo/2). %animo(titulo_cancion, tipo_animo).
+:-dynamic(duracion/2). %duracion(titulo_cancion, tipo_duracion).
+:-dynamic(escuchas/3). %escuchas(nombre_usuario, titulo_cancion, cantidad).
+:-dynamic(usuario/3). %usuario(nombre_usuario, ciudad, pais).
+
 inicio:-
     write_ln('Ingrese su usuario para que le recomiende canciones de su gusto'),
     read(Usuario),
@@ -71,13 +78,9 @@ buscarAnimo(Animo,Artistas,Canciones,Generos,Duraciones,[H|T]):-
     genero(Cancion,Gen),
     artista(Cancion,Art),
     duracion(Cancion,Dur),
-    dynamic(artista/2),
     retract(artista(Cancion,Art)),
-    dynamic(genero/2),
     retract(genero(Cancion,Gen)),
-    dynamic(animo/2),
     retract(animo(Cancion,Animo)),
-    dynamic(duracion/2),
     retract(duracion(Cancion,Dur)),
 
     evaluarCancion(Art,Artistas,1000,PuntajeArt),
@@ -96,13 +99,9 @@ buscarGenero(Genero,Artistas,Canciones,Animos,Duraciones,[H|T]):-
     artista(Cancion,Art),
     animo(Cancion,Ani),
     duracion(Cancion,Dur),
-    dynamic(artista/2),
     retract(artista(Cancion,Art)),
-    dynamic(genero/2),
     retract(genero(Cancion,Genero)),
-    dynamic(animo/2),
     retract(animo(Cancion,Ani)),
-    dynamic(duracion/2),
     retract(duracion(Cancion,Dur)),
 
     evaluarCancion(Art,Artistas,1000,PuntajeArt),
@@ -120,13 +119,9 @@ buscarCancion(Cancion,Artistas,Generos,Animos,Duraciones,[H|T]):-
     genero(Cancion,Gen),
     animo(Cancion,Ani),
     duracion(Cancion,Dur),
-    dynamic(artista/2),
     retract(artista(Cancion,Art)),
-    dynamic(genero/2),
     retract(genero(Cancion,Gen)),
-    dynamic(animo/2),
     retract(animo(Cancion,Ani)),
-    dynamic(duracion/2),
     retract(duracion(Cancion,Dur)),
 
 
@@ -145,13 +140,9 @@ buscarArtista(Artista,Generos,Canciones,Animos,Duraciones,[H|T]):-
     genero(Cancion,Gen),
     animo(Cancion,Ani),
     duracion(Cancion,Dur),
-    dynamic(artista/2),
     retract(artista(Cancion,Artista)),
-    dynamic(genero/2),
     retract(genero(Cancion,Gen)),
-    dynamic(animo/2),
     retract(animo(Cancion,Ani)),
-    dynamic(duracion/2),
     retract(duracion(Cancion,Dur)),
 
 
@@ -277,7 +268,6 @@ recomendar(Usuario):-
 %la lista no esta resumida
 %ARMAR UN cancionesEscuchadas que se pase el escuchadas y que llame a los distintos buscarAtributo
 buscarEscuchadas(Usuario,[H|T],[H1|T1],[H2|T2],[H3|T3]):-
-    dynamic(escuchas/3),
     escuchas(Usuario,Cancion,Cant), %busca canciones escuchadas por el usuario
     artista(Cancion,Art),  %de esa canción busca el artista
     genero(Cancion,Gen),
@@ -288,13 +278,9 @@ buscarEscuchadas(Usuario,[H|T],[H1|T1],[H2|T2],[H3|T3]):-
     append([Ani],[Cant],H2),
     append([Dur],[Cant],H3),
     retract(escuchas(Usuario,Cancion,Cant)), %borra el hecho de memoria
-    dynamic(artista/2),
     retract(artista(Cancion,Art)),
-    dynamic(genero/2),
     retract(genero(Cancion,Gen)),
-    dynamic(animo/2),
     retract(animo(Cancion,Ani)),
-    dynamic(duracion/2),
     retract(duracion(Cancion,Dur)),
     buscarEscuchadas(Usuario,T,T1,T2,T3). %llama a recursividad
 buscarEscuchadas(_,[],[],[],[]). %fin de bucle.
@@ -321,13 +307,9 @@ cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,[H_CancionesNuevas|T_
     genero(Cancion,Gen),
     animo(Cancion,Ani),
     duracion(Cancion,Dur),
-    dynamic(artista/2),
     retract(artista(Cancion,Art)),
-    dynamic(genero/2),
     retract(genero(Cancion,Gen)),
-    dynamic(animo/2),
     retract(animo(Cancion,Ani)),
-    dynamic(duracion/2),
     retract(duracion(Cancion,Dur)),
 
 

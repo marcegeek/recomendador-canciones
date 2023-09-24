@@ -1,3 +1,5 @@
+:- dynamic artista/2.
+
 artista('Hard times',paramore).
 artista('No friend',paramore).
 artista('Ocho cuarenta',rodrigo).
@@ -7,6 +9,8 @@ artista('Llorarás mas de diez veces', 'leo mattioli').
 artista('Frágil', 'grupo frontera').
 artista('Decode', 'paramore').
 artista('La Bebe', 'peso pluma').
+
+:- dynamic genero/2.
 
 genero('Ocho cuarenta',cuarteto).
 genero('Sueltate el pelo',reggeton).
@@ -18,6 +22,8 @@ genero('Fragil', 'cumbia').
 genero('Decode','rock alternativo').
 genero('La Bebe',reggaeton).
 
+:- dynamic animo/2.
+
 animo('Ocho cuarenta',bailable).
 animo('Sueltate el pelo',bailable).
 animo('El bombón asesino', bailable).
@@ -27,6 +33,8 @@ animo('No friend',triste).
 animo('Frágil',bailable).
 animo('Decode',triste).
 animo('La Bebe',bailable).
+
+:- dynamic duracion/2.
 
 duracion('Ocho cuarenta',larga).
 duracion('Sueltate el pelo',corta).
@@ -38,12 +46,16 @@ duracion('Frágil',media).
 duracion('Decode', media).
 duracion('La Bebe', media).
 
+:- dynamic escuchas/3.
+
 escuchas(juan,'Ocho cuarenta',5).
 escuchas(juan,'Hard times',14).
 escuchas(franco,'El bombón asesino',13).
 escuchas(santiago,'Frágil',10).
 escuchas(ramon,'Ocho cuarenta',10).
 escuchas(santiago,'La Bebe',6).
+
+:- dynamic usuario/3.
 
 usuario(juan,'Santa Fe',argentina).
 usuario(lorena,'Capital Federal',argentina).
@@ -52,3 +64,4 @@ usuario(victoria,'Santa Fe', argentina).
 usuario(ramon,'Cordoba',argentina).
 usuario(danna,'Medellin',colombia).
 usuario(santiago,'Jalisco',mexico).
+

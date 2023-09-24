@@ -6,11 +6,14 @@
 :-dynamic(usuario/3). %usuario(nombre_usuario, ciudad, pais).
 
 inicio:-
+ dynamic(filtros/1),
+assert(filtros([])),
     write_ln('Ingrese su usuario para que le recomiende canciones de su gusto'),
     read(Usuario),
     cargarBase,
-    write('¡Hola '), write(Usuario),write_ln('! ¿Que quieres buscar hoy?¿Cancion, genero, animo o artista?'),
-    write_ln('¡Tambien podemos mostrarte tendencias tuyas o novedades!;)'),
+    write('¡Hola '), write(Usuario),write_ln('! ¿Que quieres buscar hoy? cancion, genero, animo o artista?'),
+    writeln('----------------'),
+    writeln('¡Tambien podemos mostrarte tendencias tuyas o novedades!;)'),
     read(Opcion),
     menu(Opcion,Usuario). %Agregar una cadena vacía a menú e ir filtradolá a medida que se use.
     %recomendar(Usuario).
@@ -18,60 +21,73 @@ inicio:-
 %carga base de datos
 cargarBase:-consult('datosTP.txt').
 
-menu(Dato, Usuario):-
-    %Falta agregar las tendencias propias y agregar los filtros a la búsqueda actual del usuario
-    (   Dato = cancion ->
-    write('Ingrese una cancion: '),
-    read(Cancion),
-    buscarCancion(Cancion,Art,Gen,Ani,Dur,Lista)
-    ;   Dato = artista ->
-    write('Indique un artista:'),
-    read(Artista),
-    buscarArtista(Artista,Gen,Can,Ani,Dur, Lista)
-    ;   Dato = genero ->
-    write('Ingrese un genero: '),
-    read(Genero),
-    buscarGenero(Genero,Art,Can,Ani,Dur,Lista)
-    ;   Dato = animo ->
-    write('¿Como te sientes hoy? '),
-    read(Ani),
-    buscarAnimo(Ani,Art,Can,Gen,Dur,Lista)
 
-    ;   Dato = novedades ->
-    writeln('Acá están tus canciones más escuchadas!'),
-    recomendar(Usuario)),
-    ordenar(Lista,ListaMuestra),
+menu(Dato, Usuario) :-
+    % Lógica para buscar canciones, artistas, géneros, ánimos, novedades, etc.
+    (
+        % Lógica del menú aquí
+        (   Dato = cancion ->
+            write('Ingrese una canción: '),
+            read(Cancion),
+            agregarFiltro(Cancion),
+            buscarCancion(Cancion, Art, Gen, Ani, Dur, Lista)
+        ;   Dato = artista ->
+            write('Indique un artista: '),
+            read(Artista),
+            agregarFiltro(Artista),
+            buscarArtista(Artista, Gen, Can, Ani, Dur, Lista)
+        ;   Dato = genero ->
+            write('Ingrese un género: '),
+            read(Genero),
+            agregarFiltro(Genero),
+            buscarGenero(Genero, Art, Can, Ani, Dur, Lista)
+        ;   Dato = animo ->
+            write('¿Cómo te sientes hoy? '),
+            read(Ani),
+            agregarFiltro(Ani),
+            buscarAnimo(Ani, Art, Can, Gen, Dur, Lista)
+        ;   Dato = novedades ->
+            writeln('¡Aquí están tus canciones más escuchadas!'),
+            recomendar(Usuario)
+        ),
 
-    %acá está la sección para agregar un filtro más
-    write('¿Querés agregar algúna búsqueda más?'),
-    read(Opc),
-    (    Opc= agregar ->
-    write_ln('¿Qué querés agregar?'),
-    read(Agrega),
-    agregarFiltro(Agrega,ListaMuestra,ListaFinal),
-    ordenar(ListaFinal,ListaTerminada),
-    elegirCanciones(Usuario,ListaTerminada)
-    ;    Opc = no ->
-    elegirCanciones(Usuario,ListaMuestra)),
-    %elegirCanciones(Usuario,ListaMuestra),
+        % Preguntar si se quiere agregar otro filtro
+        write('¿Quieres agregar un filtro más? (si/no): '),
+        read(Opc),
+        (
+            Opc = 'si' ->
+                % Si se responde "si", continuar el bucle
+                menuLoop(Usuario)
+            ; Opc = 'no' ->
+                % Si se responde "no", salir del bucle
+                ordenar(Lista, ListaMuestra),
+                elegirCanciones(Usuario,ListaMuestra)
+            ;
+                % Si la respuesta no es válida, mostrar un mensaje de error y continuar el bucle
+                writeln('Respuesta no válida. Responde "si" o "no"')
+        )
+    ), inicio.
 
-    inicio.
+   menuLoop(Usuario) :-
+    write_ln('Elige si buscar por Canción, género, ánimo o artista?'),
+    read(Dato),
+    menu(Dato, Usuario).
 
-%Me quedé trabado acá...
-agregarFiltro(Agregar,Lista1,Lista2):-
 
-    (   Agregar = cancion ->
-    write('Ingrese una cancion: '),
-    read(Cancion)
-    ;   Agregar  = artista ->
-    write('Indique un artista:'),
-    read(Artista)
-    ;   Agregar  = genero ->
-    write('Ingrese un genero: '),
-    read(Genero)
-    ),
-    ordenar(Lista,ListaMuestra).
+agregarFiltro(Filtro) :-
+   retract(filtros(FiltrosActuales)),
+    NuevaLista = [Filtro | FiltrosActuales],
+    assert(filtros(NuevaLista)),
+    writeln('----------------'),
+    writeln('Filtros actuales:'),
+    mostrarFiltros(NuevaLista),
+    writeln(''),
+    writeln('----------------').
 
+mostrarFiltros([]).
+mostrarFiltros([Filtro|Resto]) :-
+    write(Filtro), write(', '),
+    mostrarFiltros(Resto).
 
 buscarAnimo(Animo,Artistas,Canciones,Generos,Duraciones,[H|T]):-
     animo(Cancion,Animo),

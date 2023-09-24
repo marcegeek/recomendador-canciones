@@ -45,22 +45,22 @@ menu(Dato, Usuario) :-
             write('Ingrese una canción: '),
             read(Cancion),
             agregarFiltro(Cancion),
-            buscarCancion(Cancion, Art, Gen, Ani, Dur, Lista)
+            buscarCancion(Cancion, _, _, _, _, Lista)
         ;   Dato = artista ->
             write('Indique un artista: '),
             read(Artista),
             agregarFiltro(Artista),
-            buscarArtista(Artista, Gen, Can, Ani, Dur, Lista)
+            buscarArtista(Artista,  _, _, _, _, Lista)
         ;   Dato = genero ->
             write('Ingrese un género: '),
             read(Genero),
             agregarFiltro(Genero),
-            buscarGenero(Genero, Art, Can, Ani, Dur, Lista)
+            buscarGenero(Genero,  _, _, _, _, Lista)
         ;   Dato = animo ->
             write('¿Cómo te sientes hoy? '),
             read(Ani),
             agregarFiltro(Ani),
-            buscarAnimo(Ani, Art, Can, Gen, Dur, Lista)
+            buscarAnimo(Ani,  _, _, _, _, Lista)
         ;   Dato = novedades ->
             writeln('¡Aquí están tus canciones más escuchadas!'),
             recomendar(Usuario)
@@ -115,7 +115,7 @@ buscarAnimo(Animo,Artistas,Canciones,Generos,Duraciones,[H|T]):-
     retract(duracion(Cancion,Dur)),
 
     evaluarCancion(Art,Artistas,1000,PuntajeArt),
-    evaluarCancion(Animo,Animos,10,PuntajeAni),
+    evaluarCancion(Animo,_,10,PuntajeAni),
     evaluarCancion(Dur,Duraciones,1,PuntajeDur),
     PuntajeTotal is PuntajeArt + PuntajeAni + PuntajeDur,
 

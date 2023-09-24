@@ -1,3 +1,4 @@
+%hechos de la base de datos
 :-dynamic(artista/2). %artista(titulo_cancion, nombre_artista).
 :-dynamic(genero/2). %genero(titulo_cancion, nombre_genero).
 :-dynamic(animo/2). %animo(titulo_cancion, tipo_animo).
@@ -5,8 +6,10 @@
 :-dynamic(escuchas/3). %escuchas(nombre_usuario, titulo_cancion, cantidad).
 :-dynamic(usuario/3). %usuario(nombre_usuario, ciudad, pais).
 
+%hechos auxiliares en memoria
+:-dynamic(filtros/1). %filtros(lista_filtros).
+
 inicio:-
-    dynamic(filtros/1),
     assert(filtros([])),
     cargarBase,
     write_ln('Ingrese su usuario para que le recomiende canciones de su gusto'),

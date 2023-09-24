@@ -6,11 +6,12 @@
 :-dynamic(usuario/3). %usuario(nombre_usuario, ciudad, pais).
 
 inicio:-
- dynamic(filtros/1),
-assert(filtros([])),
+    dynamic(filtros/1),
+    assert(filtros([])),
+    cargarBase,
     write_ln('Ingrese su usuario para que le recomiende canciones de su gusto'),
     read(Usuario),
-    cargarBase,
+    ingresoUsuario(Usuario),
     write('¡Hola '), write(Usuario),write_ln('! ¿Que quieres buscar hoy? cancion, genero, animo o artista?'),
     writeln('----------------'),
     writeln('¡Tambien podemos mostrarte tendencias tuyas o novedades!;)'),
@@ -21,6 +22,20 @@ assert(filtros([])),
 %carga base de datos
 cargarBase:-consult('datosTP.txt').
 
+ingresoUsuario(Usuario) :-
+    usuario(Usuario, _, _).  %solamente verificar si está en la BD
+ingresoUsuario(Usuario) :-
+    write('Usuario no registrado: ¿quieres registrarte? (si/no): '),
+    read(Opc), Opc = 'si', %si se responde 'no' falla la regla
+    nuevoUsuario(Usuario).
+
+nuevoUsuario(Usuario) :-
+    write('Ingresa tu ciudad: '),
+    read(Ciudad),
+    write('Ingresa tu país: '),
+    read(Pais),
+    assert(usuario(Usuario, Ciudad, Pais)),
+    guardar.
 
 menu(Dato, Usuario) :-
     % Lógica para buscar canciones, artistas, géneros, ánimos, novedades, etc.
@@ -236,6 +251,7 @@ guardar:-
     listing(animo),
     listing(duracion),
     listing(escuchas),
+    listing(usuario),
     told.
 
 evaluarCancion(_,[],_,0).

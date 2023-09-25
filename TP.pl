@@ -399,3 +399,10 @@ cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,[H_CancionesNuevas|T_
     append([Cancion],[PuntajeTotal],H_CancionesNuevas),
     cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,T_CancionesNuevas).
 cancionesNuevas(_,_,_,_,_,[]).
+
+%compara dos strings, distinguiendo o no mayúsculas/minúsculas
+%comparaString(S1, S2, CaseSensitive).
+comparaString(S, S, true). %en este caso se unifica directamente
+comparaString(S1, S2, false) :-
+    string_lower(S1, S1Lower), %comparamos todo en minúsculas
+    string_lower(S2, S1Lower). %unificamos para comparar

@@ -11,6 +11,7 @@
 
 inicio:-
     cargarBase,
+    retractall(filtros/1),
     assert(filtros([])),
     write_ln('Ingrese su usuario para que le recomiende canciones de su gusto'),
     read(Usuario),
@@ -24,7 +25,7 @@ inicio:-
 
 %carga base de datos
 cargarBase:-
-    retractall(filtros/1)
+     retractall(filtros/1)
     ,retractall(escuchas/3)
     ,retractall(genero/2)
     ,retractall(artista/2)
@@ -53,61 +54,156 @@ menu(Dato, Usuario) :-
     (
         % Lógica del menú aquí
         (   Dato = cancion ->
-            write('Ingrese una canción: '),
+            write('Ingrese una cancion '),
             read(Cancion),
             agregarFiltro(Cancion),
-            buscarCancion(Cancion, _, _, _, _, Lista)
+            buscarCancion(Cancion,Lista)
         ;   Dato = artista ->
-            write('Indique un artista: '),
+            write('Indique un artista '),
             read(Artista),
             agregarFiltro(Artista),
-            buscarArtista(Artista, _, _, _, _, Lista)
+            buscarArtista(Artista,Lista)
         ;   Dato = genero ->
-            write('Ingrese un género: '),
+            write('Ingrese un genero '),
             read(Genero),
             agregarFiltro(Genero),
-            buscarGenero(Genero, _, _, _, _, Lista)
+            buscarGenero(Genero,Lista)
         ;   Dato = animo ->
-            write('¿Cómo te sientes hoy? '),
+            write('¿Como te sientes hoy? '),
             read(Ani),
             agregarFiltro(Ani),
             buscarAnimo(Ani, Lista)
         ;   Dato = novedades ->
-            writeln('¡Aquí están tus canciones más escuchadas!'),
+            writeln('¡Aqui estan las canciones mas escuchadas!'),
             recomendar(Usuario)
         ),
 
         % Preguntar si se quiere agregar otro filtro
-        write('¿Quieres agregar un filtro más? (si/no): '),
+        write('¿Quieres agregar un filtro mas? (si/no): '),
         read(Opc),
         (
             Opc = 'si' ->
-                % Si se responde "si", continuar el bucle
-                menuLoop(Usuario)
+            % Si se responde "si", continuar el bucle
+                write_ln('Ingrese el dato por le que buscar'),
+                read(Data),
+                menuFiltro(Data,Usuario,Lista)
             ; Opc = 'no' ->
                 % Si se responde "no", salir del bucle
                 elegirCanciones(Usuario,Lista)
             ;
                 % Si la respuesta no es válida, mostrar un mensaje de error y continuar el bucle
-                writeln('Respuesta no válida. Responde "si" o "no"')
+                writeln('Respuesta no valida. Responde "si" o "no"')
         )
     ), inicio.
 
-   menuLoop(Usuario) :-
-    write_ln('Elige si buscar por Canción, género, ánimo o artista?'),
-    read(Dato),
-    menu(Dato, Usuario).
+   %menuLoop(Usuario) :-
+    %write_ln('Elige si buscar por Cancion, genero, animo o artista?'),
+    %read(Dato),
+    %menu(Dato, Usuario).
+
+menuFiltro(Dato, Usuario,Lista) :-
+    % Lógica para buscar canciones, artistas, géneros, ánimos, novedades, etc.
+    (
+        % Lógica del menú aquí
+        (   Dato = cancion ->
+            write('Ingrese una cancion '),
+            read(Cancion),
+            %agregarFiltro(Cancion),
+            %buscarCancion(Cancion,Lista)
+            filtraCancion(Cancion,Lista,ListaParcial)
+        ;   Dato = artista ->
+            write('Indique un artista '),
+            read(Artista),
+            %agregarFiltro(Artista),
+            %buscarArtista(Artista,Lista)
+            filtraArtista(Artista,Lista,ListaParcial)
+        ;   Dato = genero ->
+            write('Ingrese un genero '),
+            read(Genero),
+            %agregarFiltro(Genero),
+            %buscarGenero(Genero,Lista)
+            filtraGenero(Genero,Lista,ListaParcial)
+        ;   Dato = animo ->
+            write('¿Como te sientes hoy? ',ListaParcial),
+            read(Ani),
+            %agregarFiltro(Ani),
+            %buscarAnimo(Ani, Lista)
+            filtraAnimo(Ani,Lista,ListaParcial)
+        ),
+
+        % Preguntar si se quiere agregar otro filtro
+        write('¿Quieres agregar un filtro mas? (si/no): '),
+        read(Opc),
+        (
+            Opc = 'si' ->
+            write_ln('Ingrese el dato por le que buscar'),
+                read(Data),
+                menuFiltro(Data,Usuario,ListaParcial)
+           ; Opc = 'no' ->
+                % Si se responde "no", salir del bucle
+                elegirCanciones(Usuario,ListaParcial)
+            ;
+                % Si la respuesta no es válida, mostrar un mensaje de error y continuar el bucle
+                writeln('Respuesta no valida. Responde "si" o "no"')
+        )
+    ), inicio.
+
+filtraCancion(Cancion,[Cancion|T],[H|T2]):-
+    artista(Cancion,_),
+    retract(artista/2),
+    append([Cancion],H),
+    filtraCancion(Cancion,T,T2).
+filtraCancion(Cancion,[_|T],T2):-
+    filtraCancion(Cancion,T,T2).
+filtraCancion(_,[],_).
+
+filtraAnimo(Animo,[Cancion|T],[H|T2]):-
+    animo(Cancion,Animo),
+    retract(animo/2),
+    append([Cancion],H),
+    filtraAnimo(Animo,T,T2).
+filtraAnimo(Animo,[Cancion|T],T2):-
+    animo(Cancion,_),
+    retract(animo/2),
+    filtraAnimo(Animo,T,T2).
+filtraAnimo(_,[],_).
+
+filtraGenero(Genero,[Cancion|T],[H|T2]):-
+    genero(Cancion,Genero),
+    retract(genero/2),
+    append([Cancion],H),
+    filtraGenero(Genero,T,T2).
+filtraGenero(Genero,[_|T],T2):-
+    genero(_,_),
+    retract(genero/2),
+    filtraGenero(Genero,T,T2).
+filtraGenero(_,[],_).
+
+filtraArtista(Artista,[Cancion|T],[H|T2]):-
+    artista(Cancion,Artista),
+    retract(artista/2),
+    append([Cancion],H),
+    filtraArtista(Artista,T,T2).
+filtraArtista(Artista,[Cancion|T],T2):-
+    artista(Cancion,_),
+    retract(artista/2),
+    filtraArtista(Artista,T,T2).
+filtraArtista(_,[],_).
+
 
 
 agregarFiltro(Filtro) :-
-   retract(filtros(FiltrosActuales)),
-    NuevaLista = [Filtro | FiltrosActuales],
+    %retract(filtros(FiltrosActuales)),
+    NuevaLista = [Filtro|_],
     assert(filtros(NuevaLista)),
     writeln('----------------'),
     writeln('Filtros actuales:'),
     mostrarFiltros(NuevaLista),
     writeln(''),
     writeln('----------------').
+%agregarFiltro([]) :-
+%    assert(filtros([])),
+%    write_ln('Se eliminaron los filtros.').
 
 mostrarFiltros([]).
 mostrarFiltros([Filtro|Resto]) :-
@@ -126,66 +222,35 @@ buscarAnimo(_,[]). %fin de bucle.
 
 
 
-buscarGenero(Genero,Artistas,Canciones,Animos,Duraciones,[H|T]):-
+buscarGenero(Genero,[Cancion|T]):-
     genero(Cancion,Genero),
-    artista(Cancion,Art),
-    animo(Cancion,Ani),
-    duracion(Cancion,Dur),
-    retract(artista(Cancion,Art)),
-    retract(genero(Cancion,Genero)),
-    retract(animo(Cancion,Ani)),
-    retract(duracion(Cancion,Dur)),
-
-    evaluarCancion(Art,Artistas,1000,PuntajeArt),
-    evaluarCancion(Ani,Animos,10,PuntajeAni),
-    evaluarCancion(Dur,Duraciones,1,PuntajeDur),
-    PuntajeTotal is PuntajeArt + PuntajeAni + PuntajeDur,
-
-    append([Cancion],[PuntajeTotal],H),
-    buscarGenero(Genero,Artistas,Canciones,Animos,Duraciones,T).
-buscarGenero(_,[],[],[],[],[]). %fin de bucle.
+    retract(artista(Cancion,_)),
+    retract(genero(Cancion,_)),
+    retract(animo(Cancion,_)),
+    retract(duracion(Cancion,_)),
+    buscarGenero(Genero,T).
+buscarGenero(_,[]). %fin de bucle.
 
 
-buscarCancion(Cancion,Artistas,Generos,Animos,Duraciones,[H|T]):-
-    artista(Cancion,Art),
-    genero(Cancion,Gen),
-    animo(Cancion,Ani),
-    duracion(Cancion,Dur),
-    retract(artista(Cancion,Art)),
-    retract(genero(Cancion,Gen)),
-    retract(animo(Cancion,Ani)),
-    retract(duracion(Cancion,Dur)),
+buscarCancion(Cancion,[Cancion|T]):-
+    artista(Cancion,_),
 
+    retract(artista(Cancion,_)),
+    retract(genero(Cancion,_)),
+    retract(animo(Cancion,_)),
+    retract(duracion(Cancion,_)),
+    buscarCancion(Cancion,T).
+buscarCancion(_,[]). %fin de bucle.
 
-    evaluarCancion(Art,Artistas,1000,PuntajeArt),
-    evaluarCancion(Gen,Generos,100,PuntajeGen),
-    evaluarCancion(Ani,Animos,10,PuntajeAni),
-    evaluarCancion(Dur,Duraciones,1,PuntajeDur),
-    PuntajeTotal is PuntajeArt + PuntajeGen + PuntajeAni + PuntajeDur,
-
-    append([Cancion],[PuntajeTotal],H),
-    buscarCancion(Cancion,Artistas,Generos,Animos,Duraciones,T).
-buscarCancion(_,[],[],[],[],[]). %fin de bucle.
-
-buscarArtista(Artista,Generos,Canciones,Animos,Duraciones,[H|T]):-
+buscarArtista(Artista,[Cancion|T]):-
     artista(Cancion,Artista),
-    genero(Cancion,Gen),
-    animo(Cancion,Ani),
-    duracion(Cancion,Dur),
-    retract(artista(Cancion,Artista)),
-    retract(genero(Cancion,Gen)),
-    retract(animo(Cancion,Ani)),
-    retract(duracion(Cancion,Dur)),
 
-
-    evaluarCancion(Gen,Generos,100,PuntajeGen),
-    evaluarCancion(Ani,Animos,10,PuntajeAni),
-    evaluarCancion(Dur,Duraciones,1,PuntajeDur),
-    PuntajeTotal is PuntajeGen + PuntajeAni + PuntajeDur,
-
-    append([Cancion],[PuntajeTotal],H),
-    buscarArtista(Artista,Canciones,Generos,Animos,Duraciones,T).
-buscarArtista(_,[],[],[],[],[]). %fin de bucle.
+    retract(artista(Cancion,_)),
+    retract(genero(Cancion,_)),
+    retract(animo(Cancion,_)),
+    retract(duracion(Cancion,_)),
+    buscarArtista(Artista,T).
+buscarArtista(_,[]). %fin de bucle.
 
 ordenar([A|[]],[A]).
 ordenar([[A,B],[C,D]|T],F):-
@@ -201,19 +266,27 @@ elegirCanciones(Usuario,Recomendaciones):-
     cargarBase,
     mostrarCanciones(RecRev,_),
     read(Eleccion),
-    Eleccion\='No',
-    buscar_por_indice(Recomendaciones,Eleccion,Agregar),
-    (escuchas(Usuario,Agregar,_)->
-        (escuchas(Usuario,Agregar,CantActual),
-        CantNueva is CantActual +1,
-        retract(escuchas(Usuario,Agregar,CantActual))
-        );
-        CantNueva is 1
-    ),
-    assert(escuchas(Usuario,Agregar,CantNueva)),
-    guardar.
+    (   Eleccion = no ->
+            inicio
+    ;  Eleccion\='no' ->
+            buscar_por_indice(Recomendaciones,Eleccion,Agregar),
+            (escuchas(Usuario,Agregar,_)->
+                (escuchas(Usuario,Agregar,CantActual),
+                CantNueva is CantActual +1,
+                retract(escuchas(Usuario,Agregar,CantActual))
+                );
+            CantNueva is 1
+            ),
+            assert(escuchas(Usuario,Agregar,CantNueva)),
+            guardar
+    ).
 
-elegirCanciones(_,_):-
+
+%elegirCanciones(_,[]):-
+%    writeln('No se encontraron canciones, vuelva a intentarlo'),
+%    inicio.
+
+elegirCanciones(_,[]):-
         inicio.
 
 mostrarCanciones([[H,_]|[]],1):-

@@ -1,3 +1,6 @@
+:- encoding(utf8).
+:- set_prolog_flag(encoding, utf8).
+
 %hechos de la base de datos
 :-dynamic(artista/2). %artista(titulo_cancion, nombre_artista).
 :-dynamic(genero/2). %genero(titulo_cancion, nombre_genero).
@@ -224,7 +227,7 @@ ordenar([[A,B],[C,D]|T],F):-
         append([[A,B]],L,F))).
 
 elegirCanciones(_,[]):-
-    inicio.
+    writeln('No existen canciones que cumplan con los criterios seleccionados').
 elegirCanciones(Usuario,Recomendaciones):-
     write_ln('Creo que estas canciones podrian gustarte. Si no te interesan escribi no.'),
     reverse(Recomendaciones,RecRev),

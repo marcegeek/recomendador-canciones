@@ -94,11 +94,6 @@ menu(Dato, Usuario) :-
         )
     ), inicio.
 
-   %menuLoop(Usuario) :-
-    %write_ln('Elige si buscar por Cancion, genero, animo o artista?'),
-    %read(Dato),
-    %menu(Dato, Usuario).
-
 menuFiltro(Dato, Usuario,Lista) :-
     cargarBase,
     % Lógica para buscar canciones, artistas, géneros, ánimos, novedades, etc.
@@ -143,6 +138,7 @@ filtraCancion(Cancion,[Cancion|T],[Cancion|T2]):-
     artista(Cancion,Art),
     retract(artista(Cancion,Art)),
     filtraCancion(Cancion,T,T2).
+
 filtraCancion(Cancion,[Cancion|T],T2):-
     artista(Cancion,_),
     retract(artista(Cancion,_)),
@@ -152,6 +148,7 @@ filtraCancion(_,[],[]).
 filtraAnimo(Animo,[Cancion|T],[Cancion|T2]):-
     animo(Cancion,Animo),
     filtraAnimo(Animo,T,T2).
+
 filtraAnimo(Animo,[Cancion|T],T2):-
     animo(Cancion,_),
     retract(animo(Cancion,_)),
@@ -162,6 +159,7 @@ filtraGenero(Genero,[Cancion|T],[Cancion|T2]):-
     genero(Cancion,Genero),
     retract(genero(Cancion,Genero)),
     filtraGenero(Genero,T,T2).
+
 filtraGenero(Genero,[Cancion|T],T2):-
     genero(Cancion,_),
     retract(genero(Cancion,_)),
@@ -172,6 +170,7 @@ filtraArtista(Artista,[Cancion|T],[Cancion|T2]):-
     artista(Cancion,Artista),
     retract(artista(Cancion,Artista)),
     filtraArtista(Artista,T,T2).
+
 filtraArtista(Artista,[Cancion|T],T2):-
     artista(Cancion,_),
     retract(artista(Cancion,_)),
@@ -200,7 +199,6 @@ buscarGenero(_,[]). %fin de bucle.
 
 buscarCancion(Cancion,[Cancion|T]):-
     artista(Cancion,_),
-
     retract(artista(Cancion,_)),
     retract(genero(Cancion,_)),
     retract(animo(Cancion,_)),
@@ -210,7 +208,6 @@ buscarCancion(_,[]). %fin de bucle.
 
 buscarArtista(Artista,[Cancion|T]):-
     artista(Cancion,Artista),
-
     retract(artista(Cancion,_)),
     retract(genero(Cancion,_)),
     retract(animo(Cancion,_)),
@@ -244,13 +241,9 @@ elegirCanciones(Usuario,Recomendaciones):-
             CantNueva is 1
             ),
             assert(escuchas(Usuario,Agregar,CantNueva)),
+            writeln('Se ha reproducido la cancion.'),
             guardar
     ).
-
-
-%elegirCanciones(_,[]):-
-%    writeln('No se encontraron canciones, vuelva a intentarlo'),
-%    inicio.
 
 elegirCanciones(_,[]):-
         inicio.
@@ -343,9 +336,6 @@ evaluarCancion(Elemento,Lista,Factor,S):-
     buscar_por_elemento(Elemento,ListaRev,Val),
     S is Val * Factor.
 
-
-
-
 buscar_por_indice([[H,_]|_], 1, H).
 buscar_por_indice([H|_], 1, H).
 buscar_por_indice([_|T], I, Elemento) :-
@@ -363,8 +353,6 @@ buscar_por_elemento(X, [_|T], Pos):-
 
 recomendar(Usuario):-
     buscarEscuchadas(Usuario,Art,Gen,Ani,Dur),
-    %assert(artistas(Art)),
-
     resumirLista(Art,ArtResumida),
     ordenar(ArtResumida,ArtOrdenada),
     resumirLista(Gen,GenResumida),
@@ -373,7 +361,6 @@ recomendar(Usuario):-
     ordenar(AniResumida,AniOrdenada),
     resumirLista(Dur,DurResumida),
     ordenar(DurResumida,DurOrdenada),
-
     cancionesNuevas(Usuario, ArtOrdenada,GenOrdenada,AniOrdenada,DurOrdenada,A_recomendar),
     ordenar(A_recomendar,A_recomendarOrdenada),
     elegirCanciones(Usuario,A_recomendarOrdenada),
@@ -427,14 +414,11 @@ cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,[H_CancionesNuevas|T_
     retract(genero(Cancion,Gen)),
     retract(animo(Cancion,Ani)),
     retract(duracion(Cancion,Dur)),
-
-
     evaluarCancion(Art,Artistas,1000,PuntajeArt),
     evaluarCancion(Gen,Generos,100,PuntajeGen),
     evaluarCancion(Ani,Animos,10,PuntajeAni),
     evaluarCancion(Dur,Duraciones,1,PuntajeDur),
     PuntajeTotal is PuntajeArt + PuntajeGen + PuntajeAni + PuntajeDur,
-
     append([Cancion],[PuntajeTotal],H_CancionesNuevas),
     cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,T_CancionesNuevas).
 cancionesNuevas(_,_,_,_,_,[]).

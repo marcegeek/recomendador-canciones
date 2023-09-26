@@ -14,13 +14,16 @@ inicio:-
     cargarBase,
     assert(filtros([])),
     write_ln('Ingrese su usuario para que le recomiende canciones de su gusto'),
-    read(Usuario),
-    ingresoUsuario(Usuario),
-    write('¡Hola '), write(Usuario),write_ln('! ¿Que quieres buscar hoy? cancion, genero, animo o artista?'),
-    writeln('----------------'),
-    writeln('¡Tambien podemos mostrarte novedades!'),
-    read(Opcion),
-    menu(Opcion,Usuario). %Agregar una cadena vacía a menú e ir filtradolá a medida que se use.
+    (
+        read(Usuario), ingresoUsuario(Usuario) ->
+            write('¡Hola '), write(Usuario),write_ln('! ¿Que quieres buscar hoy? cancion, genero, animo o artista?'),
+            writeln('----------------'),
+            writeln('¡Tambien podemos mostrarte novedades!'),
+            read(Opcion),
+            menu(Opcion,Usuario) %Agregar una cadena vacía a menú e ir filtradolá a medida que se use.
+        ;
+            inicio %volver al inicio, cuando falla el ingreso de usuario
+    ).
     %recomendar(Usuario).
 
 %carga base de datos

@@ -15,11 +15,11 @@ inicio:-
     assert(filtros([])),
     write_ln('Ingrese su usuario para que le recomiende canciones de su gusto'),
     (
-        read(Usuario), ingresoUsuario(Usuario) ->
+        leer_atom(Usuario), ingresoUsuario(Usuario) ->
             write('¡Hola '), write(Usuario),write_ln('! ¿Que quieres buscar hoy? cancion, genero, animo o artista?'),
             writeln('----------------'),
             writeln('¡Tambien podemos mostrarte novedades!'),
-            read(Opcion),
+            leer_atom(Opcion),
             menu(Opcion,Usuario) %Agregar una cadena vacía a menú e ir filtradolá a medida que se use.
         ;
             inicio %volver al inicio, cuando falla el ingreso de usuario
@@ -40,14 +40,14 @@ ingresoUsuario(Usuario) :-
     usuario(Usuario, _, _).  %solamente verificar si está en la BD
 ingresoUsuario(Usuario) :-
     write('Usuario no registrado: ¿quieres registrarte? (si/no): '),
-    read(Opc), Opc = 'si', %si se responde 'no' falla la regla
+    leer_atom(Opc), Opc = 'si', %si se responde 'no' falla la regla
     nuevoUsuario(Usuario).
 
 nuevoUsuario(Usuario) :-
     write('Ingresa tu ciudad: '),
-    read(Ciudad),
+    leer_atom(Ciudad),
     write('Ingresa tu país: '),
-    read(Pais),
+    leer_atom(Pais),
     assert(usuario(Usuario, Ciudad, Pais)),
     guardar.
 
@@ -57,19 +57,19 @@ menu(Dato, Usuario) :-
         % Lógica del menú aquí
         (   Dato = cancion ->
             write_ln('Ingrese una cancion '),
-            read(Cancion),
+            leer_atom(Cancion),
             buscarCancion(Cancion,Lista)
         ;   Dato = artista ->
             write_ln('Indique un artista '),
-            read(Artista),
+            leer_atom(Artista),
             buscarArtista(Artista,Lista)
         ;   Dato = genero ->
             write_ln('Ingrese un genero '),
-            read(Genero),
+            leer_atom(Genero),
             buscarGenero(Genero,Lista)
         ;   Dato = animo ->
             write_ln('Como te sientes hoy? '),
-            read(Ani),
+            leer_atom(Ani),
             buscarAnimo(Ani, Lista)
         ;   Dato = novedades ->
             write_ln('Aqui canciones que te podrian gustar!'),
@@ -78,12 +78,12 @@ menu(Dato, Usuario) :-
 
         % Preguntar si se quiere agregar otro filtro
         write_ln('Quieres agregar un filtro mas? (si/no): '),
-        read(Opc),
+        leer_atom(Opc),
         (
             Opc = 'si' ->
             % Si se responde "si", continuar el bucle
                 write_ln('Ingrese el dato por le que buscar'),
-                read(Data),
+                leer_atom(Data),
                 menuFiltro(Data,Usuario,Lista)
             ; Opc = 'no' ->
                 % Si se responde "no", salir del bucle
@@ -101,29 +101,29 @@ menuFiltro(Dato, Usuario,Lista) :-
         % Lógica del menú aquí
         (   Dato = cancion ->
             write_ln('Ingrese una cancion '),
-            read(Cancion),
+            leer_atom(Cancion),
             filtraCancion(Cancion,Lista,ListaParcial)
         ;   Dato = artista ->
             write_ln('Indique un artista '),
-            read(Artista),
+            leer_atom(Artista),
             filtraArtista(Artista,Lista,ListaParcial)
         ;   Dato = genero ->
             write_ln('Ingrese un genero '),
-            read(Genero),
+            leer_atom(Genero),
             filtraGenero(Genero,Lista,ListaParcial)
         ;   Dato = animo ->
             write_ln('Como te sientes hoy? '),
-            read(Ani),
+            leer_atom(Ani),
             filtraAnimo(Ani,Lista,ListaParcial)
         ),
 
         % Preguntar si se quiere agregar otro filtro
         write_ln('Quieres agregar un filtro mas? (si/no): '),
-        read(Opc),
+        leer_atom(Opc),
         (
             Opc = 'si' ->
             write_ln('Ingrese el dato por le que buscar'),
-                read(Data),
+                leer_atom(Data),
                 menuFiltro(Data,Usuario,ListaParcial)
            ; Opc = 'no' ->
                 % Si se responde "no", salir del bucle
@@ -228,11 +228,12 @@ elegirCanciones(Usuario,Recomendaciones):-
     reverse(Recomendaciones,RecRev),
     cargarBase,
     mostrarCanciones(RecRev,_),
-    read(Eleccion),
+    leer_atom(Eleccion),
     (   Eleccion = no ->
             inicio
     ;  Eleccion\='no' ->
-            buscar_por_indice(Recomendaciones,Eleccion,Agregar),
+            atom_number(Eleccion, EleccionNum),
+            buscar_por_indice(Recomendaciones,EleccionNum,Agregar),
             (escuchas(Usuario,Agregar,_)->
                 (escuchas(Usuario,Agregar,CantActual),
                 CantNueva is CantActual +1,
@@ -422,3 +423,7 @@ cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,[H_CancionesNuevas|T_
     append([Cancion],[PuntajeTotal],H_CancionesNuevas),
     cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,T_CancionesNuevas).
 cancionesNuevas(_,_,_,_,_,[]).
+
+%leer cadena por teclado como valor atom, eliminando espacios en blanco alrededor
+leer_atom(A) :-
+    read_string(user_input, "\n", "\r\t ", _, S), atom_string(A, S).

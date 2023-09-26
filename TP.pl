@@ -223,6 +223,8 @@ ordenar([[A,B],[C,D]|T],F):-
         (ordenar([[C,D]|T],L),
         append([[A,B]],L,F))).
 
+elegirCanciones(_,[]):-
+    inicio.
 elegirCanciones(Usuario,Recomendaciones):-
     write_ln('Creo que estas canciones podrian gustarte. Si no te interesan escribi no.'),
     reverse(Recomendaciones,RecRev),
@@ -245,9 +247,6 @@ elegirCanciones(Usuario,Recomendaciones):-
             writeln('Se ha reproducido la cancion.'),
             guardar
     ).
-
-elegirCanciones(_,[]):-
-        inicio.
 
 mostrarCanciones([[H,_]|[]],1):-
     artista(H,Art),

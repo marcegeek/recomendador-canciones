@@ -218,6 +218,7 @@ buscarArtista(Artista,[Cancion|T]):-
     buscarArtista(Artista,T).
 buscarArtista(_,[]). %fin de bucle.
 
+ordenar([], []).
 ordenar([A|[]],[A]).
 ordenar([[A,B],[C,D]|T],F):-
     (B<D ->

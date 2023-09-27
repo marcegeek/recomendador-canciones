@@ -18,18 +18,16 @@ inicio:-
     retractall(filtros/1),
     cargarBase,
     assert(filtros([])),
-    write_ln('Ingrese su usuario para que le recomiende canciones de su gusto'),
-    (
-        leer_atom(Usuario), ingresoUsuario(Usuario) ->
-            write('¡Hola '), write(Usuario),write_ln('! ¿Que quieres buscar hoy? cancion, genero, animo o artista?'),
-            writeln('----------------'),
-            writeln('¡Tambien podemos mostrarte novedades!'),
-            leer_atom(Opcion),
-            menu(Opcion,Usuario) %Agregar una cadena vacía a menú e ir filtradolá a medida que se use.
+    leer('Ingrese su usuario para que le recomiende canciones de su gusto', arbitrario, _, Usuario),
+    (   ingresoUsuario(Usuario) ->
+            format('¡Hola ~w! ¿Qué quieres buscar hoy?~n', [Usuario]),
+            %writeln('----------------'),
+            %writeln('¡También podemos mostrarte novedades!'),
+            leer_opcion('Ingresa tu elección', Opcion, [cancion, genero, animo, artista, novedades]),
+            menu(Opcion,Usuario) %Agregar una cadena vacía a menú e ir filtrandola a medida que se use.
         ;
             inicio %volver al inicio, cuando falla el ingreso de usuario
     ).
-    %recomendar(Usuario).
 
 %carga base de datos
 cargarBase:-
@@ -44,15 +42,14 @@ cargarBase:-
 ingresoUsuario(Usuario) :-
     usuario(Usuario, _, _).  %solamente verificar si está en la BD
 ingresoUsuario(Usuario) :-
-    write('Usuario no registrado: ¿quieres registrarte? (si/no): '),
-    leer_atom(Opc), Opc = 'si', %si se responde 'no' falla la regla
+    writeln('Usuario no registrado:'),
+    leer_opcion('¿quieres registrarte?', Opc, [si,no]),
+    Opc = 'si', %si se responde 'no' falla la regla
     nuevoUsuario(Usuario).
 
 nuevoUsuario(Usuario) :-
-    write('Ingresa tu ciudad: '),
-    leer_atom(Ciudad),
-    write('Ingresa tu país: '),
-    leer_atom(Pais),
+    leer('Ingresa tu ciudad', requerido, _, Ciudad),
+    leer('Ingresa tu país', requerido, _, Pais),
     assert(usuario(Usuario, Ciudad, Pais)),
     guardar.
 
@@ -73,8 +70,7 @@ menu(Dato, Usuario) :-
             leer_atom(Genero),
             buscarGenero(Genero,Lista)
         ;   Dato = animo ->
-            write_ln('Como te sientes hoy? '),
-            leer_atom(Ani),
+            read_opcion('Como te sientes hoy? ', Ani, [alegre, triste, bailable]),
             buscarAnimo(Ani, Lista)
         ;   Dato = novedades ->
             write_ln('Aqui canciones que te podrian gustar!'),
@@ -82,20 +78,18 @@ menu(Dato, Usuario) :-
         ),
 
         % Preguntar si se quiere agregar otro filtro
-        write_ln('Quieres agregar un filtro mas? (si/no): '),
-        leer_atom(Opc),
+        leer_opcion('Quieres agregar un filtro mas?', Opc, [si,no]),
         (
             Opc = 'si' ->
             % Si se responde "si", continuar el bucle
-                write_ln('Ingrese el dato por le que buscar'),
-                leer_atom(Data),
+                leer_opcion('Ingrese el dato por el que buscar', Data, [cancion, artista, genero, animo]),
                 menuFiltro(Data,Usuario,Lista)
             ; Opc = 'no' ->
                 % Si se responde "no", salir del bucle
                 elegirCanciones(Usuario,Lista)
-            ;
-                % Si la respuesta no es válida, mostrar un mensaje de error y continuar el bucle
-                write_ln('Respuesta no valida. Responde "si" o "no"')
+            %;
+            %    % Si la respuesta no es válida, mostrar un mensaje de error y continuar el bucle
+            %    write_ln('Respuesta no valida. Responde "si" o "no"')
         )
     ), inicio.
 
@@ -117,25 +111,22 @@ menuFiltro(Dato, Usuario,Lista) :-
             leer_atom(Genero),
             filtraGenero(Genero,Lista,ListaParcial)
         ;   Dato = animo ->
-            write_ln('Como te sientes hoy? '),
-            leer_atom(Ani),
+            read_opcion('Como te sientes hoy? ', Ani, [alegre, triste, bailable]),
             filtraAnimo(Ani,Lista,ListaParcial)
         ),
 
         % Preguntar si se quiere agregar otro filtro
-        write_ln('Quieres agregar un filtro mas? (si/no): '),
-        leer_atom(Opc),
+        leer_opcion('Quieres agregar un filtro mas?', Opc, [si, no]),
         (
             Opc = 'si' ->
-            write_ln('Ingrese el dato por le que buscar'),
-                leer_atom(Data),
+                leer_opcion('Ingrese el dato por el que buscar', Data, [cancion, artista, genero, animo]),
                 menuFiltro(Data,Usuario,ListaParcial)
            ; Opc = 'no' ->
                 % Si se responde "no", salir del bucle
                 elegirCanciones(Usuario,ListaParcial)
-            ;
-                % Si la respuesta no es válida, mostrar un mensaje de error y continuar el bucle
-                write_ln('Respuesta no valida. Responde "si" o "no"')
+            %;
+            %    % Si la respuesta no es válida, mostrar un mensaje de error y continuar el bucle
+            %    write_ln('Respuesta no valida. Responde "si" o "no"')
         )
     ), inicio.
 

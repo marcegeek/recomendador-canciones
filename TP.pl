@@ -227,12 +227,12 @@ elegirCanciones(Usuario,Recomendaciones):-
     reverse(Recomendaciones,RecRev),
     cargarBase,
     mostrarCanciones(RecRev,_),
-    leer_atom(Eleccion),
+    length(RecRev, Long),
+    leer('Ingresa tu elección', seleccionCancion, [1, Long], Eleccion),
     (   Eleccion = no ->
             inicio
     ;  Eleccion\='no' ->
-            atom_number(Eleccion, EleccionNum),
-            buscar_por_indice(Recomendaciones,EleccionNum,Agregar),
+            buscar_por_indice(Recomendaciones,Eleccion,Agregar),
             (escuchas(Usuario,Agregar,_)->
                 (escuchas(Usuario,Agregar,CantActual),
                 CantNueva is CantActual +1,
@@ -419,3 +419,10 @@ cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,[H_CancionesNuevas|T_
     append([Cancion],[PuntajeTotal],H_CancionesNuevas),
     cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,T_CancionesNuevas).
 cancionesNuevas(_,_,_,_,_,[]).
+
+seleccionCancion(Rango) :-
+    %nonvar(Rango), !,
+    format(' (número entero en el rango ~w o "no")', [Rango]).
+seleccionCancion(A, Rango, V) :-
+    A = no, V = A;
+    numero_entero(A, Rango, V).

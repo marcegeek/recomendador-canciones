@@ -63,7 +63,7 @@ leer(Msg, TipoInput, TipoArgs, Datos) :-
 leer_opcion(Msg, Opc, Permitidas) :- leer(Msg, opciones, Permitidas, Opc).
 
 arbitrario(_).
-arbitrario(_, _, _).
+arbitrario(Datos, _, Datos).
 
 requerido(_) :- write(' (no dejar en blanco)').
 requerido(Datos, _, Datos) :- Datos \= ''.

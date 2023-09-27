@@ -20,9 +20,9 @@ inicio:-
     assert(filtros([])),
     leer('Ingrese su usuario para que le recomiende canciones de su gusto', arbitrario, _, Usuario),
     (   ingresoUsuario(Usuario) ->
-            format('¡Hola ~w! ¿Qué quieres buscar hoy?~n', [Usuario]),
-            %writeln('----------------'),
-            %writeln('¡También podemos mostrarte novedades!'),
+            format('¡Hola ~w! ¿Qué quieres buscar hoy? ¿Cancion, genero, animo o artista?~n', [Usuario]),
+            writeln('----------------'),
+            writeln('¡También podemos mostrarte novedades!'),
             leer_opcion('Ingresa tu elección', Opcion, [cancion, genero, animo, artista, novedades]),
             menu(Opcion,Usuario) %Agregar una cadena vacía a menú e ir filtrandola a medida que se use.
         ;

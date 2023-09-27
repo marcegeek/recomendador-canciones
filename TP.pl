@@ -183,7 +183,8 @@ buscarAnimo(Animo,[Cancion|T]):-
     buscarAnimo(Animo,T).
 buscarAnimo(_,[]). %fin de bucle.
 
-buscarGenero(Genero,[Cancion|T]):-
+buscarGenero(GeneroBuscar,[Cancion|T]):-
+    encontrarGenero(GeneroBuscar, Genero),
     genero(Cancion,Genero),
     retract(artista(Cancion,_)),
     retract(genero(Cancion,_)),
@@ -193,7 +194,8 @@ buscarGenero(Genero,[Cancion|T]):-
 buscarGenero(_,[]). %fin de bucle.
 
 
-buscarCancion(Cancion,[Cancion|T]):-
+buscarCancion(CancionBuscar,[Cancion|T]):-
+    encontrarCancion(CancionBuscar, Cancion),
     artista(Cancion,_),
     retract(artista(Cancion,_)),
     retract(genero(Cancion,_)),
@@ -202,7 +204,8 @@ buscarCancion(Cancion,[Cancion|T]):-
     buscarCancion(Cancion,T).
 buscarCancion(_,[]). %fin de bucle.
 
-buscarArtista(Artista,[Cancion|T]):-
+buscarArtista(ArtistaBuscar,[Cancion|T]):-
+    encontrarArtista(ArtistaBuscar, Artista),
     artista(Cancion,Artista),
     retract(artista(Cancion,_)),
     retract(genero(Cancion,_)),
@@ -426,3 +429,15 @@ seleccionCancion(Rango) :-
 seleccionCancion(A, Rango, V) :-
     A = no, V = A;
     numero_entero(A, Rango, V).
+
+encontrarCancion(Consulta, Valor) :-
+    artista(Valor, _),
+    atoms_iguales(Consulta, Valor, false), !.
+
+encontrarArtista(Consulta, Valor) :-
+    artista(_, Valor),
+    atoms_iguales(Consulta, Valor, false), !.
+
+encontrarGenero(Consulta, Valor) :-
+    genero(_, Valor),
+    atoms_iguales(Consulta, Valor, false), !.

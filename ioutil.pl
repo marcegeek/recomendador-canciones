@@ -50,7 +50,7 @@ leer(Msg, TipoInput, TipoArgs, Datos) :-
     % Mostrar el mensaje de input e invocar TipoInput/2 (muestra indicador de ayuda)
     format('~w', Msg),
     call(TipoInput, TipoArgs),
-    write(': '),
+    writeln(':'),
     leer_atom(Tmp),
     % Verificar y unificar los datos con TipoInput/4
     (   (call(TipoInput, Tmp, TipoArgs, Datos)) ->
@@ -58,7 +58,7 @@ leer(Msg, TipoInput, TipoArgs, Datos) :-
     ;
         % Los datos no son válidos, reintentar
         leer(Msg, TipoInput, TipoArgs, Datos)
-    ).
+    ), !.
 
 leer_opcion(Msg, Opc, Permitidas) :- leer(Msg, opciones, Permitidas, Opc).
 

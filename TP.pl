@@ -12,6 +12,8 @@
 %hechos auxiliares en memoria
 :-dynamic(filtros/1). %filtros(lista_filtros).
 
+:-consult('ioutil.pl'). %cargar predicados útiles para E/S
+
 inicio:-
     retractall(filtros/1),
     cargarBase,
@@ -426,7 +428,3 @@ cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,[H_CancionesNuevas|T_
     append([Cancion],[PuntajeTotal],H_CancionesNuevas),
     cancionesNuevas(Usuario,Artistas,Generos,Animos,Duraciones,T_CancionesNuevas).
 cancionesNuevas(_,_,_,_,_,[]).
-
-%leer cadena por teclado como valor atom, eliminando espacios en blanco alrededor
-leer_atom(A) :-
-    read_string(user_input, "\n", "\r\t ", _, S), atom_string(A, S).

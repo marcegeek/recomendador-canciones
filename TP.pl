@@ -70,7 +70,7 @@ menu(Dato, Usuario) :-
             leer_atom(Genero),
             buscarGenero(Genero,Lista)
         ;   Dato = animo ->
-            read_opcion('Como te sientes hoy? ', Ani, [alegre, triste, bailable]),
+            leer_opcion('Como te sientes hoy?', Ani, [alegre, triste, bailable]),
             buscarAnimo(Ani, Lista)
         ;   Dato = novedades ->
             write_ln('Aqui canciones que te podrian gustar!'),
@@ -111,7 +111,7 @@ menuFiltro(Dato, Usuario,Lista) :-
             leer_atom(Genero),
             filtraGenero(Genero,Lista,ListaParcial)
         ;   Dato = animo ->
-            read_opcion('Como te sientes hoy? ', Ani, [alegre, triste, bailable]),
+            leer_opcion('Como te sientes hoy?', Ani, [alegre, triste, bailable]),
             filtraAnimo(Ani,Lista,ListaParcial)
         ),
 
